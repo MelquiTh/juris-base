@@ -8,6 +8,8 @@ O projeto Supabase do Juris usa a URL `https://qwecsowqvaiwpnbqictf.supabase.co`
 
 O SQL cria a tabela `juris_user_data`, ativa RLS para que cada conta so leia e altere sua propria linha, e cria o bucket privado `juris-files` com politicas de acesso por pasta/usuario.
 
+O schema tambem limita o projeto a no maximo 3 contas no total. Para ativar ou atualizar essa regra no projeto, abra **SQL Editor** no painel Supabase e execute o arquivo `supabase-schema.sql`. Se o projeto ja tiver 3 ou mais contas, novos cadastros serao recusados; as contas existentes nao serao removidas.
+
 ## 2. URL do site e login por e-mail
 
 O HTML ja usa a URL e a chave publica publishable do projeto, apropriada para o navegador com RLS ativada. Nunca coloque uma chave `service_role` ou `secret` no HTML, em arquivos do GitHub ou no navegador.

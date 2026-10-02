@@ -4,6 +4,36 @@ create table if not exists public.juris_user_data (
   updated_at timestamptz not null default now()
 );
 
+create or replace function public.enforce_juris_auth_user_limit()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  account_count bigint;
+begin
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtext('juris'),
+    pg_catalog.hashtext('auth-user-limit')
+  );
+
+  select count(*) into account_count from auth.users;
+  if account_count >= 3 then
+    raise exception 'O limite máximo de 3 contas foi atingido.';
+  end if;
+
+  return new;
+end;
+$$;
+
+revoke all on function public.enforce_juris_auth_user_limit() from public;
+
+drop trigger if exists enforce_juris_auth_user_limit on auth.users;
+create trigger enforce_juris_auth_user_limit
+  before insert on auth.users
+  for each row execute function public.enforce_juris_auth_user_limit();
+
 alter table public.juris_user_data enable row level security;
 
 grant select, insert, update, delete on public.juris_user_data to authenticated;
