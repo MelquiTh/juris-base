@@ -2,35 +2,23 @@
 
 O site e estatico: para publica-lo, o GitHub Pages precisa servir `index.html`. O banco e a autenticacao ficam no Supabase. Nao publique uma chave `service_role`; somente a chave publica anon/publishable deve aparecer no HTML.
 
-## 1. Criar o banco
+## 1. Banco e autenticacao
 
-1. Crie um projeto em [supabase.com](https://supabase.com/).
-2. No painel, abra **SQL Editor** e execute todo o arquivo `supabase-schema.sql`.
-3. Em **Project Settings > API**, copie a **Project URL** e a chave **anon/publishable**.
+O projeto Supabase do Juris usa a URL `https://qwecsowqvaiwpnbqictf.supabase.co`. O schema `supabase-schema.sql` cria a tabela `juris_user_data`, ativa RLS para que cada conta so leia e altere sua propria linha e cria o bucket privado `juris-files` com politicas por usuario.
 
 O SQL cria a tabela `juris_user_data`, ativa RLS para que cada conta so leia e altere sua propria linha, e cria o bucket privado `juris-files` com politicas de acesso por pasta/usuario.
 
-## 2. Configurar o HTML
+## 2. URL do site e login por e-mail
 
-No inicio do primeiro bloco `script type="module"` em `index.html`, substitua:
+O HTML ja usa a URL e a chave publica publishable do projeto, apropriada para o navegador com RLS ativada. Nunca coloque uma chave `service_role` ou `secret` no HTML, em arquivos do GitHub ou no navegador.
 
-```js
-const supabaseUrl = 'https://YOUR_PROJECT_ID.supabase.co';
-const supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
-```
+No painel Supabase, em **Authentication > URL Configuration**, use a URL publicada como **Site URL** e adicione-a tambem em **Redirect URLs**:
 
-Use os valores do seu projeto Supabase. A chave anon/publishable e propria para uso no navegador com RLS ativada. Nunca cole a chave `service_role` no HTML, em arquivos do GitHub ou no navegador.
-
-## 3. Habilitar login por e-mail
-
-No painel Supabase, em **Authentication > URL Configuration**, defina:
-
-- **Site URL**: `https://SEU_USUARIO.github.io/SEU_REPOSITORIO/`
-- **Redirect URLs**: adicione o mesmo endereco e, se for publicar na raiz da conta, `https://SEU_USUARIO.github.io/`.
+- `https://melquith.github.io/juris-base/`
 
 A tela permite criar conta e entrar com e-mail e senha. Se a confirmacao de e-mail estiver habilitada, a pessoa precisa confirmar o endereco antes de entrar. Para uso publico, configure um SMTP proprio em **Authentication > SMTP Settings** para que os e-mails de confirmacao sejam entregues corretamente.
 
-## 4. Publicar
+## 3. Publicar
 
 1. Coloque `index.html` na raiz do repositorio GitHub. O arquivo `supabase-schema.sql` e este guia podem ficar no repositorio, mas nao sao carregados pelo site.
 2. No GitHub, abra **Settings > Pages**, escolha a branch principal e a pasta `/ (root)` e salve.
