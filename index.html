@@ -570,6 +570,10 @@
     const close = element => element.classList.remove('open');
     const show = element => element.classList.add('open');
     const formatDate = value => new Date(value + 'T12:00:00').toLocaleDateString('pt-BR', {day:'2-digit', month:'short'}).replace('.', '');
+    ['court', 'editCourt', 'courtFilter', 'processCourtFilter'].forEach(id => {
+      const select = document.getElementById(id);
+      if (select && ![...select.options].some(option => option.value === 'TJGO')) select.add(new Option('TJGO', 'TJGO'));
+    });
     const initials = name => name.split(' ').filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase();
     const initialRows = [...document.querySelectorAll('#caseRows tr')].map(row => ({ id: row.dataset.caseId, cnj: row.querySelector('.case-name').textContent, party: row.querySelector('.case-meta').textContent, court: row.querySelector('.court').textContent.split(' · ')[0], instance: row.querySelector('.court').textContent.split(' · ')[1] || '1ª instância', phase: row.querySelector('.status').textContent, dateLabel: row.querySelector('.tag').textContent, payment: { method: '', installments: '', amount: '', proof: null } }));
     const initialEvents = [...document.querySelectorAll('#agendaList .event')].map(event => ({ title: event.querySelector('h3').textContent, details: event.querySelector('p').textContent, day: event.querySelector('.event-date b').textContent, month: event.querySelector('.event-date').textContent.replace(event.querySelector('.event-date b').textContent, '').trim() }));
