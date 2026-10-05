@@ -8,6 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Juris">
   <title>Juris | Gestão de prazos</title>
+  <script>const savedTheme = localStorage.getItem('juris-theme') === 'light' ? 'light' : 'dark'; document.documentElement.dataset.theme = savedTheme; document.querySelector('meta[name="theme-color"]').content = savedTheme === 'light' ? '#f4f7fb' : '#090a0f';</script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
     :root {
@@ -442,6 +443,137 @@
       .modal { max-height: 88svh; padding: 19px; }
       .modal-actions { flex-wrap: wrap; }
     }
+    :root[data-theme="light"] {
+      --ink: #172b4d;
+      --muted: #617187;
+      --line: #dce4ed;
+      --paper: #fff;
+      --canvas: #f4f7fb;
+      --navy: #fff;
+      --teal: #087f7a;
+      --mint: #e2f5ef;
+      --coral: #d75d4a;
+      --amber: #a86b0b;
+      --red-bg: #fff0ee;
+      --shadow: 0 14px 40px rgba(22, 44, 75, .08);
+      color-scheme: light;
+    }
+    :root[data-theme="light"] body { color: var(--ink); background: var(--canvas); }
+    :root[data-theme="light"] body::before {
+      background-image: linear-gradient(90deg, transparent calc(100% - 1px), rgba(66, 91, 125, .045) 1px), linear-gradient(0deg, transparent calc(100% - 1px), rgba(66, 91, 125, .035) 1px);
+    }
+    :root[data-theme="light"] #appShell { background: var(--canvas); }
+    :root[data-theme="light"] .sidebar { border-color: var(--line); background: #fff; }
+    :root[data-theme="light"] .brand-mark { color: #fff; background: var(--teal); border-color: var(--teal); }
+    :root[data-theme="light"] .nav-label { color: var(--muted); }
+    :root[data-theme="light"] .nav button { color: #52647a; }
+    :root[data-theme="light"] .nav button:hover,
+    :root[data-theme="light"] .nav button.active { color: var(--ink); background: #edf3f7; border-color: #dce5ee; }
+    :root[data-theme="light"] .nav button.active::before { background: var(--teal); }
+    :root[data-theme="light"] .nav-icon { color: var(--teal); }
+    :root[data-theme="light"] .profile strong { color: var(--ink); }
+    :root[data-theme="light"] .profile small,
+    :root[data-theme="light"] .sidebar-save,
+    :root[data-theme="light"] .signout-btn { color: var(--muted); }
+    :root[data-theme="light"] .signout-btn:hover { color: var(--ink); background: #edf3f7; }
+    :root[data-theme="light"] .avatar { background: var(--teal); }
+    :root[data-theme="light"] .topbar { background: #eaf0f6; }
+    :root[data-theme="light"] .topbar::before { filter: grayscale(.8) brightness(1.2) opacity(.14); }
+    :root[data-theme="light"] .topbar::after { background: linear-gradient(90deg, #eaf0f6 0%, rgba(234,240,246,.96) 34%, rgba(234,240,246,.72) 70%, rgba(234,240,246,.58) 100%); }
+    :root[data-theme="light"] .topbar .eyebrow { color: var(--teal); }
+    :root[data-theme="light"] .date { color: var(--muted); }
+    :root[data-theme="light"] .icon-btn { color: var(--ink); border-color: var(--line); background: rgba(255,255,255,.9); }
+    :root[data-theme="light"] .icon-btn:hover { border-color: var(--teal); background: #fff; }
+    :root[data-theme="light"] .stat-grid { border-color: var(--line); background: var(--paper); }
+    :root[data-theme="light"] .stat { border-color: var(--line); }
+    :root[data-theme="light"] .stat-top { color: var(--muted); }
+    :root[data-theme="light"] .stat-value { color: var(--ink); }
+    :root[data-theme="light"] .stat-note { color: var(--muted); }
+    :root[data-theme="light"] .stat-note.urgent b { color: var(--coral); }
+    :root[data-theme="light"] .panel { border-color: var(--line); background: var(--paper); }
+    :root[data-theme="light"] .panel-head { border-color: var(--line); }
+    :root[data-theme="light"] .panel-title,
+    :root[data-theme="light"] .deadline h3,
+    :root[data-theme="light"] .event h3,
+    :root[data-theme="light"] .process-detail h3 { color: var(--ink); }
+    :root[data-theme="light"] .panel-link,
+    :root[data-theme="light"] .archive-btn { color: var(--teal); }
+    :root[data-theme="light"] .panel-link:hover,
+    :root[data-theme="light"] .archive-btn:hover { color: #075d59; }
+    :root[data-theme="light"] .tag.red { color: #b33f36; border-color: #f0c9c5; background: #fff0ee; }
+    :root[data-theme="light"] .tag.yellow { color: #8a5a08; border-color: #f0dfb8; background: #fff6df; }
+    :root[data-theme="light"] .tag.green { color: #087f7a; border-color: #bfe7da; background: #e2f5ef; }
+    :root[data-theme="light"] .tag.gray { color: #617187; border-color: #dce4ed; background: #eef2f6; }
+    :root[data-theme="light"] .deadline { border-color: var(--line); }
+    :root[data-theme="light"] .day-box { color: var(--teal); border-color: var(--line); background: #f1f5f8; }
+    :root[data-theme="light"] .day-box.hot { color: #b33f36; border-color: #f0c9c5; background: #fff0ee; }
+    :root[data-theme="light"] .deadline p,
+    :root[data-theme="light"] .case-meta,
+    :root[data-theme="light"] .event p,
+    :root[data-theme="light"] .process-detail p,
+    :root[data-theme="light"] .deadline-right small { color: var(--muted); }
+    :root[data-theme="light"] .event { border-color: var(--line); background: #fff; }
+    :root[data-theme="light"] .event-date,
+    :root[data-theme="light"] .event-date b { color: var(--teal); }
+    :root[data-theme="light"] .delete-btn:hover { background: var(--red-bg); }
+    :root[data-theme="light"] input,
+    :root[data-theme="light"] select,
+    :root[data-theme="light"] textarea { color: var(--ink); border-color: #cfd9e4; background: #fff; }
+    :root[data-theme="light"] input::placeholder,
+    :root[data-theme="light"] textarea::placeholder { color: #8592a3; }
+    :root[data-theme="light"] input:focus,
+    :root[data-theme="light"] select:focus,
+    :root[data-theme="light"] textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(8,127,122,.14); }
+    :root[data-theme="light"] select option { color: var(--ink); background: #fff; }
+    :root[data-theme="light"] .case-table th { color: var(--muted); }
+    :root[data-theme="light"] .case-table td { border-color: var(--line); color: var(--ink); }
+    :root[data-theme="light"] .court { color: var(--teal); }
+    :root[data-theme="light"] .status { color: var(--muted); }
+    :root[data-theme="light"] .process-summary-item,
+    :root[data-theme="light"] .attachment-item,
+    :root[data-theme="light"] .installments-box,
+    :root[data-theme="light"] .analysis-box { border-color: var(--line); background: #f7f9fc; }
+    :root[data-theme="light"] .process-summary-item span { color: var(--muted); }
+    :root[data-theme="light"] .process-summary-item strong { color: var(--ink); }
+    :root[data-theme="light"] .process-tab { color: var(--muted); }
+    :root[data-theme="light"] .process-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+    :root[data-theme="light"] .process-detail { border-color: var(--line); }
+    :root[data-theme="light"] .process-detail .process-observation { color: #43546b; }
+    :root[data-theme="light"] .edit-process-btn { color: var(--teal); border-color: var(--line); background: #f1f5f8; }
+    :root[data-theme="light"] .edit-process-btn:hover { color: #075d59; border-color: #9bcfc3; background: #e2f5ef; }
+    :root[data-theme="light"] .attachment-remove,
+    :root[data-theme="light"] .proof-link,
+    :root[data-theme="light"] .process-attachment-link { color: var(--teal); }
+    :root[data-theme="light"] .empty,
+    :root[data-theme="light"] .view-empty,
+    :root[data-theme="light"] .process-empty { color: var(--muted); }
+    :root[data-theme="light"] .modal-wrap { background: rgba(23,43,77,.38); }
+    :root[data-theme="light"] .modal { color: var(--ink); border-color: var(--line); background: var(--paper); box-shadow: var(--shadow); }
+    :root[data-theme="light"] .modal-head { border-color: var(--line); }
+    :root[data-theme="light"] .modal h2 { color: var(--ink); }
+    :root[data-theme="light"] .modal p,
+    :root[data-theme="light"] .field label,
+    :root[data-theme="light"] .installments-title { color: var(--muted); }
+    :root[data-theme="light"] .close { color: var(--ink); border-color: var(--line); background: #f1f5f8; }
+    :root[data-theme="light"] .toast { color: #fff; border-color: #087f7a; background: #087f7a; }
+    :root[data-theme="light"] .ai-panel { border-color: #ccebe2; background: #eef8f5; }
+    :root[data-theme="light"] .auth-gate { color: var(--ink); background: var(--canvas); }
+    :root[data-theme="light"] .auth-gate::before { border-color: var(--line); filter: grayscale(.5) brightness(1.12) opacity(.28); }
+    :root[data-theme="light"] .auth-gate::after { border-color: rgba(66,91,125,.18); }
+    :root[data-theme="light"] .auth-brand,
+    :root[data-theme="light"] .auth-panel h1 { color: var(--ink); }
+    :root[data-theme="light"] .auth-panel .eyebrow { color: var(--teal); }
+    :root[data-theme="light"] .auth-panel p { color: var(--muted); }
+    :root[data-theme="light"] .auth-panel label { color: #52647a; }
+    :root[data-theme="light"] .auth-panel input { background: #fff; }
+    :root[data-theme="light"] .auth-switch { color: var(--teal); }
+    :root[data-theme="light"] .auth-message.error { color: #b33f36; }
+    :root[data-theme="light"] .auth-message.success { color: var(--teal); }
+    :root[data-theme="light"] .mobile-nav { border-color: var(--line); background: rgba(255,255,255,.97); }
+    :root[data-theme="light"] .mobile-nav button { color: var(--muted); }
+    :root[data-theme="light"] .mobile-nav button.active { color: var(--teal); }
+    .theme-setting { margin-bottom: 17px; }
+    .theme-setting select { max-width: 240px; }
   </style>
 </head>
 <body>
@@ -566,6 +698,31 @@
     const settingsModal = document.getElementById('settingsModal');
     const aiModal = document.getElementById('aiModal');
     const toast = document.getElementById('toast');
+    const themeSetting = document.createElement('div');
+    themeSetting.className = 'field theme-setting';
+    const themeLabel = document.createElement('label');
+    themeLabel.htmlFor = 'themeSelect';
+    themeLabel.textContent = 'Tema da interface';
+    const themeSelect = document.createElement('select');
+    themeSelect.id = 'themeSelect';
+    themeSelect.add(new Option('Escuro', 'dark'));
+    themeSelect.add(new Option('Claro', 'light'));
+    themeSetting.append(themeLabel, themeSelect);
+    settingsModal.querySelector('form').insertBefore(themeSetting, settingsModal.querySelector('.save-note'));
+    themeSelect.value = document.documentElement.dataset.theme;
+    themeSelect.addEventListener('change', () => {
+      const selectedTheme = themeSelect.value;
+      try {
+        localStorage.setItem('juris-theme', selectedTheme);
+      } catch (error) {
+        themeSelect.value = document.documentElement.dataset.theme;
+        console.error('Não foi possível salvar a preferência de tema.', error);
+        notify('Não foi possível salvar a preferência de tema.');
+        return;
+      }
+      document.documentElement.dataset.theme = selectedTheme;
+      document.querySelector('meta[name="theme-color"]').content = selectedTheme === 'light' ? '#f4f7fb' : '#090a0f';
+    });
     const notify = message => { toast.textContent = message; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2800); };
     const close = element => element.classList.remove('open');
     const show = element => element.classList.add('open');
@@ -645,7 +802,7 @@
     const renderEvents = () => { const list = document.getElementById('agendaList'); list.replaceChildren(...state.events.map(item => { const event = document.createElement('article'); event.className = 'event'; event.innerHTML = '<div class="event-date"><b></b></div><div><h3></h3><p></p></div><div class="event-actions"><button class="delete-btn" data-delete-event title="Excluir compromisso" aria-label="Excluir compromisso">×</button></div>'; event.querySelector('.event-date b').textContent = item.day; event.querySelector('.event-date').append(document.createTextNode(item.month)); event.querySelector('h3').textContent = item.title; event.querySelector('p').textContent = item.details; return event; })); };
     const renderDeadlineStatus = () => document.querySelectorAll('.deadline').forEach(item => { const done = state.deadlines[item.dataset.deadlineId] === true; const days = Math.ceil((new Date(item.dataset.due + 'T23:59:59') - new Date()) / 86400000); const tag = item.querySelector('.deadline-status'); const remaining = item.querySelector('.deadline-remaining'); item.classList.toggle('done', done); tag.className = 'tag deadline-status'; if (done) { tag.classList.add('gray'); tag.textContent = 'finalizado'; remaining.textContent = 'Prazo concluído'; } else if (days < 0) { tag.classList.add('red'); tag.textContent = 'vencido'; remaining.textContent = Math.abs(days) + ' dia(s) em atraso'; } else if (days <= 3) { tag.classList.add('red'); tag.textContent = days === 0 ? 'vence hoje' : 'urgente'; remaining.textContent = days + ' dia(s) restante(s)'; } else if (days <= 7) { tag.classList.add('yellow'); tag.textContent = 'próximo do fim'; remaining.textContent = days + ' dias restantes'; } else { tag.classList.add('green'); tag.textContent = 'no prazo'; remaining.textContent = days + ' dias restantes'; } });
     const applyFilters = () => { const term = document.getElementById('caseSearch').value.toLowerCase(); const filter = document.getElementById('courtFilter').value; let visible = 0; document.querySelectorAll('#caseRows tr').forEach(row => { const match = row.textContent.toLowerCase().includes(term) && (filter === 'Todos os tribunais' || row.querySelector('.court').textContent.startsWith(filter)); row.style.display = match ? '' : 'none'; if (match) visible++; }); document.getElementById('emptyCases').style.display = visible ? 'none' : 'block'; };
-    const openSettings = () => { document.getElementById('lawyerName').value = state.lawyer.name; document.getElementById('lawyerOab').value = state.lawyer.oab; show(settingsModal); };
+    const openSettings = () => { document.getElementById('lawyerName').value = state.lawyer.name; document.getElementById('lawyerOab').value = state.lawyer.oab; themeSelect.value = document.documentElement.dataset.theme; show(settingsModal); };
     const providerNames = { claude: 'Claude', openai: 'OpenAI', gemini: 'Gemini' };
     const renderAiStatus = config => { const status = document.getElementById('aiStatus'); const label = status.querySelector('span:last-child'); status.classList.toggle('connected', Boolean(config?.connected)); label.textContent = config?.connected ? 'Conectada: ' + (providerNames[config.provider] || config.provider) : 'Não conectada'; document.getElementById('openAiSettings').textContent = config?.connected ? 'Gerenciar conexão' : 'Conectar IA'; };
     const loadAiStatus = async () => { if (!window.jurisAI) return; try { renderAiStatus(await window.jurisAI.getConfig()); } catch { renderAiStatus({connected: false}); } };
