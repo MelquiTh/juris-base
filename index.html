@@ -726,6 +726,20 @@
     const notify = message => { toast.textContent = message; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2800); };
     const close = element => element.classList.remove('open');
     const show = element => element.classList.add('open');
+    // Dias de calendário (horário local) entre hoje e a data AAAA-MM-DD: 0 = vence hoje, negativo = vencido
+    const daysUntil = value => { const [y, m, d] = String(value).split('-').map(Number); const now = new Date(); return Math.round((Date.UTC(y, m - 1, d) - Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000); };
+    // Dias úteis forenses: exclui fins de semana, feriados nacionais (inclui Carnaval e Corpus Christi) e o recesso de 20/12 a 20/01 (art. 220 do CPC)
+    const easterSunday = year => { const a = year % 19, b = Math.floor(year / 100), c = year % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451), month = Math.floor((h + l - 7 * m + 114) / 31), day = ((h + l - 7 * m + 114) % 31) + 1; return Date.UTC(year, month - 1, day); };
+    const holidayCache = {};
+    const nationalHolidays = year => holidayCache[year] || (holidayCache[year] = new Set([
+      ...['01-01', '04-21', '05-01', '09-07', '10-12', '11-02', '11-15', '11-20', '12-25'].map(md => year + '-' + md),
+      ...[-48, -47, -2, 60].map(offset => new Date(easterSunday(year) + offset * 86400000).toISOString().slice(0, 10))
+    ]));
+    const isBusinessDay = utc => { const date = new Date(utc), weekday = date.getUTCDay(), month = date.getUTCMonth(), day = date.getUTCDate(); if (weekday === 0 || weekday === 6) return false; if ((month === 11 && day >= 20) || (month === 0 && day <= 20)) return false; return !nationalHolidays(date.getUTCFullYear()).has(date.toISOString().slice(0, 10)); };
+    // Dias úteis no intervalo (hoje, vencimento] — ou (vencimento, hoje] quando vencido
+    const businessDaysUntil = value => { const [y, m, d] = String(value).split('-').map(Number); const now = new Date(); const due = Date.UTC(y, m - 1, d), today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()); const [start, end] = due >= today ? [today, due] : [due, today]; let count = 0; for (let t = start + 86400000; t <= end; t += 86400000) if (isBusinessDay(t)) count++; return count; };
+    const remainingText = (value, days) => { const business = businessDaysUntil(value); const businessLabel = business + (business === 1 ? ' útil' : ' úteis'); return days < 0 ? Math.abs(days) + ' dia(s) em atraso · ' + businessLabel : days + (days === 1 ? ' dia restante' : ' dias restantes') + ' · ' + businessLabel; };
+    const toLocalISODate = date => date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
     const formatDate = value => new Date(value + 'T12:00:00').toLocaleDateString('pt-BR', {day:'2-digit', month:'short'}).replace('.', '');
     ['court', 'editCourt', 'courtFilter', 'processCourtFilter'].forEach(id => {
       const select = document.getElementById(id);
@@ -800,7 +814,7 @@
     const renderDetailedProcesses = () => { const term = document.getElementById('processSearch').value.toLowerCase(); const filter = document.getElementById('processCourtFilter').value; const items = state.processes.filter(item => (processTab === 'archived' ? item.archived : !item.archived)).filter(item => { const match = (item.cnj + ' ' + item.party + ' ' + item.court + ' ' + item.phase).toLowerCase().includes(term); return match && (filter === 'Todos os tribunais' || item.court === filter); }); const details = document.getElementById('processDetails'); details.replaceChildren(...items.map(item => { const detail = document.createElement('article'); detail.className = 'process-detail'; detail.innerHTML = '<div><h3></h3><p></p></div><div class="process-detail-meta"><span>Tribunal: <strong></strong></span><span>Fase: <strong></strong></span><span>Próximo prazo: <strong></strong></span></div><button class="archive-btn" data-toggle-archive></button>'; detail.querySelector('h3').textContent = item.cnj; detail.querySelector('p').textContent = item.party; detail.querySelector('.process-detail-meta strong').textContent = item.court + ' · ' + item.instance; detail.querySelectorAll('.process-detail-meta strong')[1].textContent = item.phase; detail.querySelectorAll('.process-detail-meta strong')[2].textContent = item.dateLabel || 'Não informado'; detail.querySelector('[data-toggle-archive]').textContent = item.archived ? 'Restaurar' : 'Arquivar'; detail.querySelector('[data-toggle-archive]').dataset.caseId = item.id; return detail; })); document.getElementById('processEmpty').hidden = items.length > 0; document.getElementById('activeProcessTotal').textContent = state.processes.filter(item => !item.archived).length; document.getElementById('archivedProcessTotal').textContent = state.processes.filter(item => item.archived).length; document.getElementById('courtProcessTotal').textContent = new Set(state.processes.map(item => item.court)).size; document.querySelectorAll('[data-process-tab]').forEach(tab => tab.classList.toggle('active', tab.dataset.processTab === processTab)); };
     const renderProcesses = () => { const rows = document.getElementById('caseRows'); rows.replaceChildren(...state.processes.filter(item => !item.archived).map(createCaseRow)); state.processTotal = state.processes.filter(item => !item.archived).length; document.getElementById('processCount').textContent = state.processTotal; document.getElementById('processNavCount').textContent = state.processTotal; renderDetailedProcesses(); };
     const renderEvents = () => { const list = document.getElementById('agendaList'); list.replaceChildren(...state.events.map(item => { const event = document.createElement('article'); event.className = 'event'; event.innerHTML = '<div class="event-date"><b></b></div><div><h3></h3><p></p></div><div class="event-actions"><button class="delete-btn" data-delete-event title="Excluir compromisso" aria-label="Excluir compromisso">×</button></div>'; event.querySelector('.event-date b').textContent = item.day; event.querySelector('.event-date').append(document.createTextNode(item.month)); event.querySelector('h3').textContent = item.title; event.querySelector('p').textContent = item.details; return event; })); };
-    const renderDeadlineStatus = () => document.querySelectorAll('.deadline').forEach(item => { const done = state.deadlines[item.dataset.deadlineId] === true; const days = Math.ceil((new Date(item.dataset.due + 'T23:59:59') - new Date()) / 86400000); const tag = item.querySelector('.deadline-status'); const remaining = item.querySelector('.deadline-remaining'); item.classList.toggle('done', done); tag.className = 'tag deadline-status'; if (done) { tag.classList.add('gray'); tag.textContent = 'finalizado'; remaining.textContent = 'Prazo concluído'; } else if (days < 0) { tag.classList.add('red'); tag.textContent = 'vencido'; remaining.textContent = Math.abs(days) + ' dia(s) em atraso'; } else if (days <= 3) { tag.classList.add('red'); tag.textContent = days === 0 ? 'vence hoje' : 'urgente'; remaining.textContent = days + ' dia(s) restante(s)'; } else if (days <= 7) { tag.classList.add('yellow'); tag.textContent = 'próximo do fim'; remaining.textContent = days + ' dias restantes'; } else { tag.classList.add('green'); tag.textContent = 'no prazo'; remaining.textContent = days + ' dias restantes'; } });
+    const renderDeadlineStatus = () => document.querySelectorAll('.deadline').forEach(item => { const done = state.deadlines[item.dataset.deadlineId] === true; const days = daysUntil(item.dataset.due); const tag = item.querySelector('.deadline-status'); const remaining = item.querySelector('.deadline-remaining'); item.classList.toggle('done', done); tag.className = 'tag deadline-status'; if (done) { tag.classList.add('gray'); tag.textContent = 'finalizado'; remaining.textContent = 'Prazo concluído'; } else if (days < 0) { tag.classList.add('red'); tag.textContent = 'vencido'; remaining.textContent = remainingText(item.dataset.due, days); } else if (days <= 3) { tag.classList.add('red'); tag.textContent = days === 0 ? 'vence hoje' : 'urgente'; remaining.textContent = remainingText(item.dataset.due, days); } else if (days <= 7) { tag.classList.add('yellow'); tag.textContent = 'próximo do fim'; remaining.textContent = remainingText(item.dataset.due, days); } else { tag.classList.add('green'); tag.textContent = 'no prazo'; remaining.textContent = remainingText(item.dataset.due, days); } });
     const applyFilters = () => { const term = document.getElementById('caseSearch').value.toLowerCase(); const filter = document.getElementById('courtFilter').value; let visible = 0; document.querySelectorAll('#caseRows tr').forEach(row => { const match = row.textContent.toLowerCase().includes(term) && (filter === 'Todos os tribunais' || row.querySelector('.court').textContent.startsWith(filter)); row.style.display = match ? '' : 'none'; if (match) visible++; }); document.getElementById('emptyCases').style.display = visible ? 'none' : 'block'; };
     const openSettings = () => { document.getElementById('lawyerName').value = state.lawyer.name; document.getElementById('lawyerOab').value = state.lawyer.oab; themeSelect.value = document.documentElement.dataset.theme; show(settingsModal); };
     const providerNames = { claude: 'Claude', openai: 'OpenAI', gemini: 'Gemini' };
@@ -864,7 +878,7 @@
       const month = monthNumbers[String(item.month || '').toLowerCase().replace('.', '').slice(0, 3)];
       if (month === undefined || !item.day) return '';
       const date = new Date(new Date().getFullYear(), month, Number(item.day));
-      return date.toISOString().slice(0, 10);
+      return toLocalISODate(date);
     };
     const inferEventType = title => /audi[eê]ncia|sess[aã]o/i.test(title || '') ? 'hearing' : 'event';
     const migrateCalendarState = () => {
@@ -874,11 +888,12 @@
     };
     const deadlineStatus = item => {
       if (item.done || state.deadlines[item.id]) return {label: 'finalizado', style: 'gray', remaining: 'Prazo concluído'};
-      const days = Math.ceil((new Date(item.date + 'T23:59:59') - new Date()) / 86400000);
-      if (days < 0) return {label: 'vencido', style: 'red', remaining: Math.abs(days) + ' dia(s) em atraso'};
-      if (days <= 3) return {label: days === 0 ? 'vence hoje' : 'urgente', style: 'red', remaining: days + ' dia(s) restante(s)'};
-      if (days <= 7) return {label: 'próximo do fim', style: 'yellow', remaining: days + ' dias restantes'};
-      return {label: 'no prazo', style: 'green', remaining: days + ' dias restantes'};
+      const days = daysUntil(item.date);
+      const remaining = remainingText(item.date, days);
+      if (days < 0) return {label: 'vencido', style: 'red', remaining};
+      if (days <= 3) return {label: days === 0 ? 'vence hoje' : 'urgente', style: 'red', remaining};
+      if (days <= 7) return {label: 'próximo do fim', style: 'yellow', remaining};
+      return {label: 'no prazo', style: 'green', remaining};
     };
     const createDeadlineElement = item => {
       const date = new Date(item.date + 'T12:00:00');

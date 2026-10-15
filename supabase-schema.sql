@@ -19,8 +19,8 @@ begin
   );
 
   select count(*) into account_count from auth.users;
-  if account_count >= 3 then
-    raise exception 'O limite máximo de 3 contas foi atingido.';
+  if account_count >= 4 then
+    raise exception 'O limite máximo de 4 contas foi atingido.';
   end if;
 
   return new;
